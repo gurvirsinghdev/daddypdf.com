@@ -24,7 +24,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-5xl mx-auto mb-20">
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95]">
+              <h1 className="text-4xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95]">
                 <span className="text-neutral-900 dark:text-white">
                   Design Visually.
                 </span>
@@ -56,8 +56,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-8 lg:py-16 bg-neutral-50 dark:bg-neutral-950/50 border-y border-neutral-100 dark:border-neutral-800">
+      {/* Overview Section */}
+      <section
+        id="overview"
+        className="py-8 lg:py-16 bg-neutral-50 dark:bg-neutral-950/50 border-y border-neutral-100 dark:border-neutral-800"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-12 gap-16">
             <div className="md:col-span-4">
@@ -110,8 +113,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Workflow Section */}
-      <section className="py-8 lg:py-16">
+      {/* How it works Section */}
+      <section id="how-it-works" className="py-8 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-24 max-w-2xl">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 tracking-tight text-neutral-900 dark:text-white">
@@ -154,8 +157,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Reliability Section */}
-      <section className="py-8 lg:py-16 bg-neutral-50 dark:bg-neutral-950/50 border-y border-neutral-100 dark:border-neutral-800">
+      {/* Infrastructure Section */}
+      <section
+        id="infrastructure"
+        className="py-8 lg:py-16 bg-neutral-50 dark:bg-neutral-950/50 border-y border-neutral-100 dark:border-neutral-800"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>

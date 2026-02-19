@@ -20,12 +20,15 @@ export const metadata: Metadata = {
   },
   description:
     "Create PDF templates once and generate them anytime with consistent layout and structure. Designed for organizations that rely on automated documents.",
+  authors: [{ name: "DaddyPDF", url: "https://daddypdf.com" }],
   openGraph: {
     title: "DaddyPDF - Reliable PDF Generation for Businesses",
     description:
       "Create PDF templates once and generate them anytime with consistent layout and structure. Designed for organizations that rely on automated documents.",
     url: "https://daddypdf.com",
     siteName: "DaddyPDF",
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
     card: "summary",
@@ -36,6 +39,18 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 

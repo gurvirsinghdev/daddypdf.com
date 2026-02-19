@@ -1,10 +1,14 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Footer from "@/modules/layout/ui/footer";
 import Navigation from "@/modules/layout/ui/navigation";
 import {
   BadgeCheckIcon,
   BoltIcon,
   BugIcon,
+  CheckCircleIcon,
+  CheckIcon,
   CloudLightningIcon,
   Icon,
   LockKeyholeIcon,
@@ -200,6 +204,100 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-8 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {[
+              [
+                "Free",
+                0,
+                "Explore and test the platform",
+                [
+                  "100 PDFs / month",
+                  "Visual editor",
+                  "API access",
+                  "Watermark included",
+                ],
+                "Start Free",
+              ],
+              [
+                "Growth",
+                29,
+                "For teams running real workflows",
+                [
+                  "5,000 PDFs / month",
+                  "No watermark",
+                  "Production use",
+                  "Discounted add-on PDF credits",
+                ],
+                "Start Growing",
+              ],
+              [
+                "Scale",
+                79,
+                "For high-volume document generation",
+                [
+                  "25,000 PDFs / month",
+                  "Team access",
+                  "No watermark",
+                  "Lowest-cost add-on PDF credits",
+                ],
+                "Go Scale",
+              ],
+            ].map(([title, price, breif, features, buttonText], idx) => (
+              <div
+                className={cn(
+                  "flex flex-col relative rounded-2xl border-2 border-neutral-200 dark:border-neutral-800 bg-background/50 p-8 transition-colors duration-300",
+                  idx === 1 && "border-neutral-800 dark:border-neutral-600",
+                )}
+                key={idx}
+              >
+                {idx === 1 && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <Badge variant="default" className="p-2 px-4 text-xs">
+                      Most Popular
+                    </Badge>
+                  </div>
+                )}
+                <div className="mb-8">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+                    {title}
+                  </h3>
+                  <div className="mt-4 flex items-baseline text-neutral-900 dark:text-white">
+                    <span className="text-5xl font-extrabold tracking-tight">
+                      ${price}
+                    </span>
+                    <span className="ml-1 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      /mo
+                    </span>
+                  </div>
+                  <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
+                    {breif}
+                  </p>
+                </div>
+                <ul className="mb-8 flex-1 space-y-4">
+                  {(features as string[]).map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckIcon className="size-4 text-green-500 dark:text-teal-500" />
+                      <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  className="w-full cursor-pointer"
+                  variant={idx === 1 ? "default" : "secondary"}
+                >
+                  {buttonText}
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
       </section>

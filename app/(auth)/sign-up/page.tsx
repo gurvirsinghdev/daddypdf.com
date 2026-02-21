@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
@@ -18,7 +19,6 @@ import {
 import { Loader2Icon } from "lucide-react";
 import createSupabaseClient from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { useState } from "react";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -29,34 +29,36 @@ const formSchema = z.object({
 });
 
 export default function SignUpPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
+  const nextPathParam = searchParams.get("next");
+  const nextPath =
+    nextPathParam && nextPathParam.startsWith("/") && !nextPathParam.startsWith("//")
+      ? nextPathParam
+      : "/dashboard";
 
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const supabaseClient = createSupabaseClient();
     const { data, error } = await supabaseClient.auth.signUp({
       email: formData.email,
       password: formData.password,
     });
 
-    if (error) toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     if (data.user) {
       form.reset();
       toast.success("Account created successfully!", {
-        description: "Please check your email for a verification link.",
-      });
-      await supabaseClient.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
+        description: "Please check your email for a verification link before signing in.",
       });
     }
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -71,9 +73,15 @@ export default function SignUpPage() {
       </div>
       <div className="space-y-6">
         <Button
+          type="button"
+          disabled
+          aria-disabled="true"
           variant={"default"}
-          className="w-full flex items-center justify-center gap-3 px-4 py-6 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-white rounded border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/90 transition-all shadow-sm text-sm font-bold cursor-pointer"
+          className="relative w-full flex items-center justify-center gap-3 px-4 py-6 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-white rounded border border-neutral-200 dark:border-neutral-700 shadow-sm text-sm font-bold opacity-60 cursor-not-allowed overflow-visible"
         >
+          <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full border border-neutral-300 dark:border-neutral-700 bg-background px-2 py-0.5 text-[10px] uppercase tracking-wide text-neutral-600 dark:text-neutral-300 pointer-events-none">
+            Coming soon
+          </span>
           <FcGoogle />
           <span>Sign up with Google</span>
         </Button>
@@ -161,7 +169,7 @@ export default function SignUpPage() {
         <span>Already have an account?</span>
         &nbsp;
         <Link
-          href={"/sign-in"}
+          href={nextPath === "/dashboard" ? "/sign-in" : `/sign-in?next=${encodeURIComponent(nextPath)}`}
           className="font-bold text-neutral-900 dark:text-white hover:underline decoration-2 underline-offset-4"
         >
           Sign in to your account

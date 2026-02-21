@@ -55,9 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.className} antialiased bg-background dark`}>
-        {children}
-      </body>
+      <body className={`${dmSans.className} antialiased dark`}>{children}</body>
     </html>
   );
 }

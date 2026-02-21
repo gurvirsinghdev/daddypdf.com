@@ -3,7 +3,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;

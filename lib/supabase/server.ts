@@ -14,9 +14,7 @@ export default async function createSupabaseServerClient() {
             cookies.forEach((cookie) =>
               cookieStore.set(cookie.name, cookie.value, cookie.options),
             );
-          } catch (error) {
-            console.error(error);
-          }
+          } catch {}
         },
       },
     },

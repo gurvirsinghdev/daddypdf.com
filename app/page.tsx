@@ -4,18 +4,17 @@ import { cn } from "@/lib/utils";
 import Footer from "@/modules/layout/ui/footer";
 import Navigation from "@/modules/layout/ui/navigation";
 import {
+  ArrowRightIcon,
   BadgeCheckIcon,
-  BoltIcon,
   BugIcon,
-  CheckCircleIcon,
   CheckIcon,
   CloudLightningIcon,
-  Icon,
   LockKeyholeIcon,
   PackageIcon,
   RecycleIcon,
   SettingsIcon,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function Home() {
@@ -43,18 +42,22 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-              <Button
-                variant={"default"}
-                className="rounded-sm cursor-pointer bg-neutral-900/90 hover:bg-neutral-800 dark:bg-white/90 dark:hover:bg-neutral-100 text-white/90 dark:text-neutral-900/90 transition-all border-transparent p-8 font-medium text-lg"
-              >
-                Start Designing For Free
-              </Button>
-              <Button
-                variant={"outline"}
-                className="rounded-sm cursor-pointer transition-all border-neutral-200 dark:border-neutral-800 p-8 font-medium text-lg"
-              >
-                View Docs
-              </Button>
+              <Link href={"/sign-up"}>
+                <Button
+                  variant={"default"}
+                  className="rounded-sm cursor-pointer bg-neutral-900/90 hover:bg-neutral-800 dark:bg-white/90 dark:hover:bg-neutral-100 text-white/90 dark:text-neutral-900/90 transition-all border-transparent p-8 font-medium text-lg"
+                >
+                  Start Designing For Free
+                </Button>
+              </Link>
+              <Link href={"/docs"}>
+                <Button
+                  variant={"outline"}
+                  className="rounded-sm cursor-pointer transition-all border-neutral-200 dark:border-neutral-800 p-8 font-medium text-lg"
+                >
+                  View Docs
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -93,11 +96,6 @@ export default function Home() {
                   "Fighting with legacy PDF libraries",
                   "Outdated tools slow you down. Replace brittle generators with a system built for modern workflows.",
                 ],
-                [
-                  PackageIcon,
-                  "Works with your stack",
-                  "If it can send an HTTP request, it works.",
-                ],
               ].map(([Icon, title, breif], idx) => (
                 <div
                   key={idx}
@@ -112,6 +110,24 @@ export default function Home() {
                   </p>
                 </div>
               ))}
+              <div className="p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors rounded-sm flex flex-col justify-between">
+                <div>
+                  <PackageIcon />
+                  <h3 className="text-xl font-bold mb-2 mt-3 text-neutral-900 dark:text-white">
+                    Works with your stack
+                  </h3>
+                  <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
+                    If it can send an HTTP request, it works.
+                  </p>
+                </div>
+                <Link
+                  href={"/docs"}
+                  className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                >
+                  <span>View Docs</span>
+                  <ArrowRightIcon className="size-4" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

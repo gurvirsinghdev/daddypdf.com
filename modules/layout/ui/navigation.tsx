@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { formatLinkLabel, quickLinks } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,25 +23,25 @@ export default function Navigation() {
             </div>
           </Link>
           <div className="hidden md:flex items-center gap-10">
-            {["Overview", "How it works", "Infrastructure", "Pricing"].map(
-              (linkLabel) => (
-                <Link
-                  key={linkLabel}
-                  href={"#" + linkLabel.toLowerCase().replaceAll(" ", "-")}
-                  className="text-neutral-900/90 hover:text-black capitalize dark:text-white/90 dark:hover:text-white transition-all"
-                >
-                  {linkLabel}
-                </Link>
-              ),
-            )}
+            {quickLinks().map((link) => (
+              <Link
+                key={link}
+                href={link}
+                className="text-neutral-900/90 hover:text-black capitalize dark:text-white/90 dark:hover:text-white transition-all"
+              >
+                {formatLinkLabel(link)}
+              </Link>
+            ))}
           </div>
           <div>
-            <Button
-              className="rounded-sm cursor-pointer bg-neutral-900/90 hover:bg-neutral-800 dark:bg-white/90 dark:hover:bg-neutral-100 text-white/90 dark:text-neutral-900/90 transition-all border-transparent p-6 text-sm font-medium"
-              variant={"default"}
-            >
-              Get Started
-            </Button>
+            <Link href={"/sign-up"}>
+              <Button
+                className="rounded-sm cursor-pointer bg-neutral-900/90 hover:bg-neutral-800 dark:bg-white/90 dark:hover:bg-neutral-100 text-white/90 dark:text-neutral-900/90 transition-all border-transparent p-6 text-sm font-medium"
+                variant={"default"}
+              >
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

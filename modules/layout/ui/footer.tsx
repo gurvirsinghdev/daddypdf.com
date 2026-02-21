@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, formatLinkLabel, quickLinks } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,28 +8,30 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-20">
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-10 flex items-center justify-center">
-                <Image
-                  src="/icon.png"
-                  alt="DaddyPDF Logo"
-                  width={32}
-                  height={40}
-                  className="scale-150"
-                />
+            <Link href={"/"}>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-10 flex items-center justify-center">
+                  <Image
+                    src="/icon.png"
+                    alt="DaddyPDF Logo"
+                    width={32}
+                    height={40}
+                    className="scale-150"
+                  />
+                </div>
+                <span className="text-xl font-bold">DaddyPDF</span>
               </div>
-              <span className="text-xl font-bold">DaddyPDF</span>
-            </div>
+            </Link>
             <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed max-w-xs mb-6">
               The visual builder for dynamic documents. Built for teams who need
               PDFs done right.
             </p>
           </div>
           {[
-            ["Quick Links", ["Home", "About", "Features", "Pricing"]],
-            ["Company", ["About", "Blog", "Careers", "Contact"]],
-            ["Legal", ["Terms of Service", "Privacy Policy"]],
-          ].map(([title, links], idx) => (
+            [],
+            ["Quick Links", quickLinks()],
+            ["Legal", ["/terms-and-conditions", "/privacy-policy"]],
+          ].map(([title, links = []], idx) => (
             <div className={cn(idx === 0 && "lg:col-start-4")} key={idx}>
               <h4 className="font-bold mb-6 text-neutral-900 dark:text-white">
                 {title}
@@ -38,10 +40,10 @@ export default function Footer() {
                 {(links as string[]).map((linkLabel) => (
                   <li key={linkLabel}>
                     <Link
-                      href={"/#" + linkLabel.toLowerCase()}
+                      href={linkLabel}
                       className="hover:text-neutral-900 dark:hover:text-white transition-all"
                     >
-                      {linkLabel}
+                      {formatLinkLabel(linkLabel)}
                     </Link>
                   </li>
                 ))}

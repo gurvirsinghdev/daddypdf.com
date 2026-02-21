@@ -4,8 +4,55 @@ import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import createSupabaseClient from "@/lib/supabase/client";
+import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader2Icon } from "lucide-react";
+
+const formSchema = z.object({
+  email: z.email("Please enter a valid email address."),
+  password: z.string("Please enter a password."),
+});
 
 export default function SignInPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+
+    const supabaseClient = createSupabaseClient();
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) toast.error(error.message);
+    if (data.user) {
+      form.reset();
+      toast.success("Signed in successfully!", {
+        description: "Redirecting to the dashboard...",
+      });
+      if (typeof window !== "undefined") window.location.href = "/dashboard";
+    }
+
+    setIsSubmitting(false);
+  };
+
   return (
     <div className="w-full max-w-[400px] space-y-10">
       <div className="text-center space-y-3">
@@ -34,44 +81,74 @@ export default function SignInPage() {
             </span>
           </div>
         </div>
-        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-          <div className="space-y-1">
-            <label
-              htmlFor="email"
-              className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-            >
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@company.com"
-              className="rounded py-6"
+        <Form {...form}>
+          <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                  >
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="email"
+                      placeholder="name@company.com"
+                      className="rounded py-6"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-1">
-            <label
-              htmlFor="password"
-              className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-            >
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="********"
-              className="rounded py-6"
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                  >
+                    Password
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="password"
+                      placeholder="********"
+                      className="rounded py-6"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="pt-2">
-            <Button
-              type="submit"
-              className="w-full flex items-center justify-center gap-3 px-4 py-6 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-900/90 dark:hover:bg-neutral-100/90 transition-all shadow-sm text-sm cursor-pointer"
-            >
-              Sign in
-            </Button>
-          </div>
-        </form>
+
+            <div className="pt-2">
+              <Button
+                type="submit"
+                className="w-full flex items-center justify-center gap-3 px-4 py-6 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-900/90 dark:hover:bg-neutral-100/90 transition-all shadow-sm text-sm cursor-pointer"
+              >
+                {isSubmitting ? (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Loader2Icon className="size-4 animate-spin" />
+                  </div>
+                ) : (
+                  <span>Sign in</span>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
       <p className="text-center text-sm text-neutral-500 dark:text-neutral-400 font-medium">
         <span>Don&apos;t have an account?</span>

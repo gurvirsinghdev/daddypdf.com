@@ -19,23 +19,31 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2Icon } from "lucide-react";
+import { use } from "react";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address."),
-  password: z.string("Please enter a password.").min(1, "Please enter a password."),
+  password: z
+    .string("Please enter a password.")
+    .min(1, "Please enter a password."),
 });
 
-export default function SignInPage() {
+interface SignInPageProps {
+  searchParams: Promise<{ next?: string }>;
+}
+
+export default function SignInPage({ searchParams }: SignInPageProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { next: nextPathParam } = use(searchParams);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const nextPathParam = searchParams.get("next");
   const nextPath =
-    nextPathParam && nextPathParam.startsWith("/") && !nextPathParam.startsWith("//")
+    nextPathParam &&
+    nextPathParam.startsWith("/") &&
+    !nextPathParam.startsWith("//")
       ? nextPathParam
       : "/dashboard";
 
@@ -173,7 +181,11 @@ export default function SignInPage() {
         <span>Don&apos;t have an account?</span>
         &nbsp;
         <Link
-          href={nextPath === "/dashboard" ? "/sign-up" : `/sign-up?next=${encodeURIComponent(nextPath)}`}
+          href={
+            nextPath === "/dashboard"
+              ? "/sign-up"
+              : `/sign-up?next=${encodeURIComponent(nextPath)}`
+          }
           className="font-medium text-neutral-900 dark:text-white hover:underline decoration-2 underline-offset-4"
         >
           Sign up for free

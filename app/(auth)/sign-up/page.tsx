@@ -19,6 +19,7 @@ import {
 import { Loader2Icon } from "lucide-react";
 import createSupabaseClient from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { use } from "react";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -28,16 +29,21 @@ const formSchema = z.object({
     .max(32, "Password cannot be longer than 32 characters."),
 });
 
-export default function SignUpPage() {
-  const searchParams = useSearchParams();
+interface SignUpPageProps {
+  searchParams: Promise<{ next?: string }>;
+}
+
+export default function SignUpPage({ searchParams }: SignUpPageProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const nextPathParam = searchParams.get("next");
+  const { next: nextPathParam } = use(searchParams);
   const nextPath =
-    nextPathParam && nextPathParam.startsWith("/") && !nextPathParam.startsWith("//")
+    nextPathParam &&
+    nextPathParam.startsWith("/") &&
+    !nextPathParam.startsWith("//")
       ? nextPathParam
       : "/dashboard";
 
@@ -56,7 +62,8 @@ export default function SignUpPage() {
     if (data.user) {
       form.reset();
       toast.success("Account created successfully!", {
-        description: "Please check your email for a verification link before signing in.",
+        description:
+          "Please check your email for a verification link before signing in.",
       });
     }
   };
@@ -169,7 +176,11 @@ export default function SignUpPage() {
         <span>Already have an account?</span>
         &nbsp;
         <Link
-          href={nextPath === "/dashboard" ? "/sign-in" : `/sign-in?next=${encodeURIComponent(nextPath)}`}
+          href={
+            nextPath === "/dashboard"
+              ? "/sign-in"
+              : `/sign-in?next=${encodeURIComponent(nextPath)}`
+          }
           className="font-bold text-neutral-900 dark:text-white hover:underline decoration-2 underline-offset-4"
         >
           Sign in to your account

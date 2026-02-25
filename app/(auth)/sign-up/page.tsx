@@ -45,7 +45,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
     nextPathParam.startsWith("/") &&
     !nextPathParam.startsWith("//")
       ? nextPathParam
-      : "/dashboard";
+      : "/templates";
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const supabaseClient = createSupabaseClient();
@@ -177,7 +177,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         &nbsp;
         <Link
           href={
-            nextPath === "/dashboard"
+            nextPath === "/templates"
               ? "/sign-in"
               : `/sign-in?next=${encodeURIComponent(nextPath)}`
           }

@@ -22,6 +22,9 @@ import { toast } from "sonner";
 import { use } from "react";
 
 const formSchema = z.object({
+  fullName: z
+    .string("Please enter your full name.")
+    .min(3, "Please enter your full name."),
   email: z.email("Please enter a valid email address."),
   password: z
     .string("Please enter a password.")
@@ -36,7 +39,7 @@ interface SignUpPageProps {
 export default function SignUpPage({ searchParams }: SignUpPageProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
   const { next: nextPathParam } = use(searchParams);
@@ -52,6 +55,12 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
     const { data, error } = await supabaseClient.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        data: {
+          full_name: formData.fullName,
+          first_name: formData.fullName?.split(" ")?.[0],
+        },
+      },
     });
 
     if (error) {
@@ -105,6 +114,31 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
       </div>
       <Form {...form}>
         <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name={"fullName"}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel
+                  htmlFor={field.name}
+                  className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                >
+                  Full Name
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="text"
+                    placeholder="John Doe"
+                    className="rounded py-6"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="email"

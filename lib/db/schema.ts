@@ -113,7 +113,7 @@ export const teamMembers = pgTable(
         SELECT team_id
         FROM team_members
         WHERE user_id = auth.uid()
-          AND role = 'owner
+          AND role = 'owner'
       ) 
     `;
 
@@ -124,7 +124,6 @@ export const teamMembers = pgTable(
       }),
       pgPolicy("team_member_insert", {
         for: "insert",
-        using: insertAndDeletePolicySQL,
         withCheck: insertAndDeletePolicySQL,
       }),
       pgPolicy("team_member_delete", {

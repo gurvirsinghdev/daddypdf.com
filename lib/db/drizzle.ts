@@ -1,7 +1,18 @@
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
-export const createDrizzleClient = () => {
-  const postgresClient = postgres(process.env.SUPABASE_DATABASE_URL!);
-  return drizzle(postgresClient);
+const globalForDb = globalThis as unknown as {
+  pool: Pool | undefined;
 };
+
+export const pool =
+  globalForDb.pool ??
+  new Pool({
+    connectionString: process.env.SUPABASE_DATABASE_URL!,
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForDb.pool = pool;
+}
+
+export const db = drizzle(pool);

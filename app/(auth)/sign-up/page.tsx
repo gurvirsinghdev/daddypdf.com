@@ -19,7 +19,6 @@ import {
 import { Loader2Icon } from "lucide-react";
 import createSupabaseClient from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { use } from "react";
 
 const formSchema = z.object({
   fullName: z
@@ -32,24 +31,12 @@ const formSchema = z.object({
     .max(32, "Password cannot be longer than 32 characters."),
 });
 
-interface SignUpPageProps {
-  searchParams: Promise<{ next?: string }>;
-}
-
-export default function SignUpPage({ searchParams }: SignUpPageProps) {
+export default function SignUpPage() {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { fullName: "", email: "", password: "" },
   });
-
-  const { next: nextPathParam } = use(searchParams);
-  const nextPath =
-    nextPathParam &&
-    nextPathParam.startsWith("/") &&
-    !nextPathParam.startsWith("//")
-      ? nextPathParam
-      : "/templates";
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const supabaseClient = createSupabaseClient();
@@ -76,7 +63,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         description:
           "Please check your email for a verification link before signing in.",
       });
-      router.push(nextPath);
+      router.push("/");
       router.refresh();
     }
   };
@@ -214,11 +201,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         <span>Already have an account?</span>
         &nbsp;
         <Link
-          href={
-            nextPath === "/templates"
-              ? "/sign-in"
-              : `/sign-in?next=${encodeURIComponent(nextPath)}`
-          }
+          href="/sign-in"
           className="font-bold text-neutral-900 dark:text-white hover:underline decoration-2 underline-offset-4"
         >
           Sign in to your account

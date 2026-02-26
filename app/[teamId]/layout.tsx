@@ -39,6 +39,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/modules/dashboard/ui/logout-button";
+import Link from "next/link";
 
 interface SidebarMenuItem {
   label: string;
@@ -49,11 +50,14 @@ type SidebarMenu = SidebarMenuItem[];
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  params: Promise<{ teamId: string }>;
 }
 
 export default async function DashboardLayout({
+  params,
   children,
 }: DashboardLayoutProps) {
+  const { teamId } = await params;
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user || !data.user.id) {
@@ -137,10 +141,14 @@ export default async function DashboardLayout({
                 <SidebarGroupContent>
                   {sidebarSettingsMenu.map((item, idx) => (
                     <SidebarMenuItem key={idx}>
-                      <SidebarMenuButton className="cursor-pointer">
-                        <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
+                      <Link
+                        href={`/${teamId}/settings/${item.label.toLowerCase().replaceAll(" ", "-")}`}
+                      >
+                        <SidebarMenuButton className="cursor-pointer">
+                          <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </Link>
                     </SidebarMenuItem>
                   ))}
                 </SidebarGroupContent>

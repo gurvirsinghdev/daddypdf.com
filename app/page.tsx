@@ -42,7 +42,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-              <Link href={"/sign-up"}>
+              <Link href={"/sign-in"}>
                 <Button
                   variant={"default"}
                   className="rounded-sm cursor-pointer bg-neutral-900/90 hover:bg-neutral-800 dark:bg-white/90 dark:hover:bg-neutral-100 text-white/90 dark:text-neutral-900/90 transition-all border-transparent p-8 font-medium text-lg"

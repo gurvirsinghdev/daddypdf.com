@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import createSupabaseServerClient from "@/lib/supabase/server";
 
 function getSafeNextPath(path: string | null) {
-  if (!path) return "/dashboard";
-  if (!path.startsWith("/") || path.startsWith("//")) return "/dashboard";
+  if (!path) return "/templates";
+  if (!path.startsWith("/") || path.startsWith("//")) return "/templates";
   return path;
 }
 

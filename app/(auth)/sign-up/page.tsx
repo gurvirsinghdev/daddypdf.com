@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
@@ -22,6 +22,9 @@ import { toast } from "sonner";
 import { use } from "react";
 
 const formSchema = z.object({
+  fullName: z
+    .string("Please enter your full name.")
+    .min(3, "Please enter your full name."),
   email: z.email("Please enter a valid email address."),
   password: z
     .string("Please enter a password.")
@@ -34,9 +37,10 @@ interface SignUpPageProps {
 }
 
 export default function SignUpPage({ searchParams }: SignUpPageProps) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
   const { next: nextPathParam } = use(searchParams);
@@ -45,13 +49,20 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
     nextPathParam.startsWith("/") &&
     !nextPathParam.startsWith("//")
       ? nextPathParam
-      : "/dashboard";
+      : "/templates";
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const supabaseClient = createSupabaseClient();
     const { data, error } = await supabaseClient.auth.signUp({
       email: formData.email,
       password: formData.password,
+      options: {
+        data: {
+          full_name: formData.fullName,
+          first_name: formData.fullName?.split(" ")?.[0],
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
+      },
     });
 
     if (error) {
@@ -65,6 +76,8 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         description:
           "Please check your email for a verification link before signing in.",
       });
+      router.push(nextPath);
+      router.refresh();
     }
   };
 
@@ -105,6 +118,31 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
       </div>
       <Form {...form}>
         <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name={"fullName"}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel
+                  htmlFor={field.name}
+                  className="block text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                >
+                  Full Name
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="text"
+                    placeholder="John Doe"
+                    className="rounded py-6"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="email"
@@ -177,7 +215,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         &nbsp;
         <Link
           href={
-            nextPath === "/dashboard"
+            nextPath === "/templates"
               ? "/sign-in"
               : `/sign-in?next=${encodeURIComponent(nextPath)}`
           }

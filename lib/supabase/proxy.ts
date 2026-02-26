@@ -22,7 +22,13 @@ export async function updateSession(request: NextRequest) {
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              domain: "." + new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname,
+              path: "/",
+              sameSite: "lax",
+              secure: process.env.NODE_ENV === "production",
+            }),
           );
         },
       },
@@ -32,7 +38,12 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  if (
+    !user &&
+    !request.nextUrl.pathname.startsWith("/") &&
+    !request.nextUrl.pathname.startsWith("/sign-in") &&
+    !request.nextUrl.pathname.startsWith("/sign-up")
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     url.searchParams.set(

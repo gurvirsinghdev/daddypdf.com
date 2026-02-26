@@ -68,7 +68,7 @@ export default async function TeamsSettingsPage({
           </div>
         </div>
 
-        <hr className="border-neutral-200 dark:border-neutral-800" />
+        <hr className="bg-neutral-200 dark:bg-neutral-800 h-0.5 rounded border-none" />
 
         <div className="flex flex-col gap-4">
           <div>
@@ -94,14 +94,24 @@ export default async function TeamsSettingsPage({
                   <TableRow key={teamMember.id}>
                     <TableCell>{teamMember.email}</TableCell>
                     <TableCell>
-                      <Select defaultValue={teamMember.role}>
+                      <Select
+                        disabled={teamMember.role === "owner"}
+                        defaultValue={teamMember.role}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="owner">Owner</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="member">Member</SelectItem>
+                          {teamMember.role === "owner" ? (
+                            <SelectItem value="owner" disabled>
+                              Owner
+                            </SelectItem>
+                          ) : (
+                            <>
+                              <SelectItem value="admin">Admin</SelectItem>
+                              <SelectItem value="member">Member</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     </TableCell>

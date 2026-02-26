@@ -1,3 +1,7 @@
+import { createDrizzleClient } from "@/lib/db/drizzle";
+import { teamMembers, teams } from "@/lib/db/schema";
+import createSupabaseServerClient from "@/lib/supabase/server";
+import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,6 +39,8 @@ import { FaFileInvoiceDollar } from "react-icons/fa";
 import React from "react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { convertSegmentPathToStaticExportFilename } from "next/dist/shared/lib/segment-cache/segment-value-encoding";
 
 interface SidebarMenuItem {
   label: string;
@@ -47,7 +53,28 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default async function DashboardLayout({
+  children,
+}: DashboardLayoutProps) {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user || !data.user.id) {
+    redirect("/sign-in");
+  }
+
+  const db = createDrizzleClient();
+  const userTeams = await db
+    .select({
+      teamId: teams.id,
+      teamName: teams.name,
+      teamRole: teamMembers.role,
+      teamCreatedAt: teams.createdAt,
+      teamUpdatedAt: teams.updatedAt,
+    })
+    .from(teamMembers)
+    .where(eq(teamMembers.userId, data.user.id))
+    .leftJoin(teams, eq(teamMembers.teamId, teams.id));
+
   const sidebarMainMenu: SidebarMenu = [
     { label: "Templates", icon: LayoutDashboardIcon },
     { label: "API Keys", icon: KeyIcon },
@@ -72,18 +99,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 >
                   <div className="flex items-center justify-start gap-2">
                     <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />
-                    <span>Acme Inc.</span>
+                    <span>{userTeams[0]?.teamName}</span>
                   </div>
                   <ChevronDownIcon />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuItem>
-                  <div className="flex items-center justify-start gap-2">
-                    <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />{" "}
-                    <span>Foobar Inc.</span>{" "}
-                  </div>
-                </DropdownMenuItem>
+                {userTeams.map((team) => (
+                  <DropdownMenuItem
+                    key={team.teamId}
+                    disabled={team.teamId === userTeams[0]?.teamId}
+                  >
+                    <div className="flex items-center justify-start gap-2">
+                      <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />{" "}
+                      <span>{team.teamName}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarHeader>

@@ -12,7 +12,14 @@ export default async function createSupabaseServerClient() {
         setAll: (cookies) => {
           try {
             cookies.forEach((cookie) =>
-              cookieStore.set(cookie.name, cookie.value, cookie.options),
+              cookieStore.set(cookie.name, cookie.value, {
+                ...cookie.options,
+                domain:
+                  "." + new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname,
+                path: "/",
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+              }),
             );
           } catch {}
         },

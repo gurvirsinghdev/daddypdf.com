@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
@@ -37,6 +37,7 @@ interface SignUpPageProps {
 }
 
 export default function SignUpPage({ searchParams }: SignUpPageProps) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { fullName: "", email: "", password: "" },
@@ -60,6 +61,7 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
           full_name: formData.fullName,
           first_name: formData.fullName?.split(" ")?.[0],
         },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
       },
     });
 
@@ -74,6 +76,8 @@ export default function SignUpPage({ searchParams }: SignUpPageProps) {
         description:
           "Please check your email for a verification link before signing in.",
       });
+      router.push(nextPath);
+      router.refresh();
     }
   };
 

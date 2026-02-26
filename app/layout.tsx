@@ -57,7 +57,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${dmSans.className} antialiased dark`}>
-        <Toaster toastOptions={{ className: dmSans.className }} />
+        <Toaster
+          toastOptions={{
+            className: dmSans.className,
+            descriptionClassName: "text-neutral-500 dark:text-neutral-400",
+          }}
+        />
         {children}
       </body>
     </html>

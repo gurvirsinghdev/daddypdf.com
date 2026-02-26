@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import z from "zod";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2Icon } from "lucide-react";
-import { use } from "react";
 
 const formSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -28,24 +27,12 @@ const formSchema = z.object({
     .min(1, "Please enter a password."),
 });
 
-interface SignInPageProps {
-  searchParams: Promise<{ next?: string }>;
-}
-
-export default function SignInPage({ searchParams }: SignInPageProps) {
+export default function SignInPage() {
   const router = useRouter();
-  const { next: nextPathParam } = use(searchParams);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
-
-  const nextPath =
-    nextPathParam &&
-    nextPathParam.startsWith("/") &&
-    !nextPathParam.startsWith("//")
-      ? nextPathParam
-      : "/templates";
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const supabaseClient = createSupabaseClient();
@@ -68,7 +55,7 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
       toast.success("Signed in successfully!", {
         description: "Redirecting...",
       });
-      router.push(nextPath);
+      router.push("/");
       router.refresh();
     }
   };
@@ -181,11 +168,7 @@ export default function SignInPage({ searchParams }: SignInPageProps) {
         <span>Don&apos;t have an account?</span>
         &nbsp;
         <Link
-          href={
-            nextPath === "/templates"
-              ? "/sign-up"
-              : `/sign-up?next=${encodeURIComponent(nextPath)}`
-          }
+          href="/sign-up"
           className="font-medium text-neutral-900 dark:text-white hover:underline decoration-2 underline-offset-4"
         >
           Sign up for free

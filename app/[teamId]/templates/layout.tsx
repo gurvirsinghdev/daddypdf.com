@@ -1,4 +1,4 @@
-import { createDrizzleClient } from "@/lib/db/drizzle";
+import { db } from "@/lib/db/drizzle";
 import { teamMembers, teams } from "@/lib/db/schema";
 import createSupabaseServerClient from "@/lib/supabase/server";
 import { eq } from "drizzle-orm";
@@ -35,12 +35,10 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { GoOrganization } from "react-icons/go";
-import { FaFileInvoiceDollar } from "react-icons/fa";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import { redirect } from "next/navigation";
-import { convertSegmentPathToStaticExportFilename } from "next/dist/shared/lib/segment-cache/segment-value-encoding";
+import LogoutButton from "@/modules/dashboard/ui/logout-button";
 
 interface SidebarMenuItem {
   label: string;
@@ -62,7 +60,6 @@ export default async function DashboardLayout({
     redirect("/sign-in");
   }
 
-  const db = createDrizzleClient();
   const userTeams = await db
     .select({
       teamId: teams.id,
@@ -99,7 +96,7 @@ export default async function DashboardLayout({
                 >
                   <div className="flex items-center justify-start gap-2">
                     <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />
-                    <span>{userTeams[0]?.teamName}</span>
+                    <span className="capitalize">{userTeams[0]?.teamName}</span>
                   </div>
                   <ChevronDownIcon />
                 </Button>
@@ -112,7 +109,7 @@ export default async function DashboardLayout({
                   >
                     <div className="flex items-center justify-start gap-2">
                       <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />{" "}
-                      <span>{team.teamName}</span>
+                      <span className="capitalize">{team.teamName}</span>
                     </div>
                   </DropdownMenuItem>
                 ))}
@@ -152,10 +149,7 @@ export default async function DashboardLayout({
           </SidebarContent>
           <SidebarFooter className="border-t">
             <SidebarMenuItem>
-              <SidebarMenuButton className="cursor-pointer hover:bg-red-800 text-white">
-                <LogOutIcon className="size-4 text-white" />
-                <span>Logout</span>
-              </SidebarMenuButton>
+              <LogoutButton />
             </SidebarMenuItem>
           </SidebarFooter>
         </Sidebar>

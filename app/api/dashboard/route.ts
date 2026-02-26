@@ -1,4 +1,4 @@
-import { createDrizzleClient } from "@/lib/db/drizzle";
+import { db } from "@/lib/db/drizzle";
 import { teamMembers, teams } from "@/lib/db/schema";
 import createSupabaseServerClient from "@/lib/supabase/server";
 import { eq } from "drizzle-orm";
@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     if (!data.user || !data.user.id) {
       return NextResponse.redirect(signInUrl);
     }
-    const db = createDrizzleClient();
     const userTeams = await db
       .select()
       .from(teamMembers)

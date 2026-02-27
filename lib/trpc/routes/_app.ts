@@ -1,6 +1,7 @@
-import { baseProcedure, createTRPCRouter } from "../init";
+import { createTRPCRouter } from "../init";
+import { teamRouter } from "./team.router";
 
 export const appRouter = createTRPCRouter({
-  hello: baseProcedure.query(() => "Hello, world!"),
+  team: teamRouter,
 });
 export type AppRouter = typeof appRouter;

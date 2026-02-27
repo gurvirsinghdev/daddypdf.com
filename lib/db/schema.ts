@@ -97,6 +97,7 @@ export const teamMembersTable = pgTable(
         SELECT team_id
         FROM team_members
         WHERE user_id = auth.uid()
+          AND role = 'owner'
       ) 
     `;
     const insertAndDeletePolicySQL = sql`

@@ -1,5 +1,5 @@
 {
-  "id": "9e4ce7a7-8c58-4ead-b86a-f5fc8ca62563",
+  "id": "38704313-7e7d-4ad1-b300-e1d8c571c0fa",
   "prevId": "2284852e-c83e-418c-8221-74dc5e1e1da5",
   "version": "7",
   "dialect": "postgresql",
@@ -81,7 +81,44 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
+      "policies": {
+        "team_member_select": {
+          "name": "team_member_select",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "\n      team_id IN (\n        SELECT team_id\n        FROM team_members\n        WHERE user_id = auth.uid()\n          AND role = 'owner'\n      ) \n    "
+        },
+        "team_member_insert": {
+          "name": "team_member_insert",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "public"
+          ],
+          "withCheck": "\n      team_id IN (\n        SELECT team_id\n        FROM team_members\n        WHERE user_id = auth.uid()\n          AND role IN ('owner', 'admin')\n      )\n    "
+        },
+        "team_member_delete": {
+          "name": "team_member_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "public"
+          ],
+          "using": "\n      team_id IN (\n        SELECT team_id\n        FROM team_members\n        WHERE user_id = auth.uid()\n          AND role IN ('owner', 'admin')\n      )\n    "
+        },
+        "team_member_update": {
+          "name": "team_member_update",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "public"
+          ],
+          "using": "\n      team_id IN (\n        SELECT team_id\n        FROM team_members\n        WHERE user_id = auth.uid()\n          AND role = 'owner'\n      ) \n    "
+        }
+      },
       "checkConstraints": {},
       "isRLSEnabled": true
     },

@@ -66,8 +66,6 @@ export default async function DashboardLayout({
     { label: "Settings", icon: SettingsIcon },
   ];
 
-  console.log(teams);
-
   return (
     <main className="h-screen w-screen overflow-hidden">
       <SidebarProvider>

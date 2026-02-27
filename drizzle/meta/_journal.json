@@ -22,6 +22,27 @@
       "when": 1772199487542,
       "tag": "0005_overrated_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772199879315,
+      "tag": "0006_policy-fn",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772200093890,
+      "tag": "0007_clammy_redwing",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772200816624,
+      "tag": "0008_authenticated-grants",
+      "breakpoints": true
     }
   ]
 }

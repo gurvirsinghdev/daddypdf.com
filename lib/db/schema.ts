@@ -2,18 +2,12 @@ import { sql } from "drizzle-orm";
 import {
   pgEnum,
   pgPolicy,
-  pgSchema,
   pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import {} from "drizzle-orm/supabase";
-
-const authSchema = pgSchema("auth");
-const authUsers = authSchema.table("users", {
-  id: uuid("id").primaryKey(),
-});
+import { authenticatedRole, authUsers } from "drizzle-orm/supabase";
 
 export const teamsTable = pgTable(
   "teams",
@@ -32,43 +26,22 @@ export const teamsTable = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }),
   },
   () => {
-    const selectPolicySQL = sql`
-      id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-      )
-    `;
-    const updatePolicySQL = sql`
-      id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-          AND role IN ('owner', 'admin')
-      )
-    `;
-    const deletePolicySQL = sql`
-      id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-          AND role = 'owner'
-      )
-    `;
-
     return [
       pgPolicy("team_select", {
         for: "select",
-        using: selectPolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_select_team(id)`,
       }),
       pgPolicy("team_update", {
         for: "update",
-        using: updatePolicySQL,
-        withCheck: updatePolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_update_team(id)`,
+        withCheck: sql`public.can_update_team(id)`,
       }),
       pgPolicy("team_delete", {
         for: "delete",
-        using: deletePolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_delete_team(id)`,
       }),
     ];
   },
@@ -92,50 +65,27 @@ export const teamMembersTable = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }),
   },
   () => {
-    const selectPolicySQL = sql`
-      team_id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-          AND role = 'owner'
-      ) 
-    `;
-    const insertAndDeletePolicySQL = sql`
-      team_id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-          AND role IN ('owner', 'admin')
-      )
-    `;
-    const updatePolicySQL = sql`
-      team_id IN (
-        SELECT team_id
-        FROM team_members
-        WHERE user_id = auth.uid()
-          AND role = 'owner'
-      ) 
-    `;
-
     return [
       pgPolicy("team_member_select", {
         for: "select",
-        using: selectPolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_select_team_members(team_id)`,
       }),
       pgPolicy("team_member_insert", {
         for: "insert",
-        withCheck: insertAndDeletePolicySQL,
+        to: authenticatedRole,
+        withCheck: sql`public.can_insert_team_members(team_id)`,
       }),
       pgPolicy("team_member_delete", {
         for: "delete",
-        using: insertAndDeletePolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_delete_team_members(team_id)`,
       }),
       pgPolicy("team_member_update", {
         for: "update",
-        using: updatePolicySQL,
+        to: authenticatedRole,
+        using: sql`public.can_update_team_members(team_id)`,
       }),
     ];
   },
 ).enableRLS();
-
-pgPolicy("team_select", {});

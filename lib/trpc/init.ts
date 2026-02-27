@@ -1,11 +1,13 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
 import superjson from "superjson";
+import { withRls, type WithRlsCallback } from "../db/drizzle";
 import createSupabaseServerClient from "../supabase/server";
 
 export const createTRPCContext = cache(async () => {
   const supabase = await createSupabaseServerClient();
   const { data: user } = await supabase.auth.getUser();
+
   return {
     user: user.user,
   };
@@ -31,6 +33,7 @@ export const protectedProcedure = baseProcedure.use(({ ctx, next }) => {
     ctx: {
       ...ctx,
       user: ctx.user!,
+      withRls: <T>(callback: WithRlsCallback<T>) => withRls(ctx.user!.id, callback),
     },
   });
 });

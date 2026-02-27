@@ -15,10 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/lib/db/drizzle";
-import { teamMembers as teamMembersTable, teams } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { authUsers } from "drizzle-orm/supabase";
+import { trpc } from "@/lib/trpc/server";
 import { TrashIcon } from "lucide-react";
 import moment from "moment";
 
@@ -30,21 +27,10 @@ export default async function TeamsSettingsPage({
   params,
 }: TeamsSettingsPageProps) {
   const { teamId } = await params;
-  const teamMembers = await db
-    .select({
-      id: teamMembersTable.id,
-      email: authUsers.email,
-      role: teamMembersTable.role,
-      joinedAt: teamMembersTable.createdAt,
-    })
-    .from(teamMembersTable)
-    .where(eq(teamMembersTable.teamId, teamId))
-    .leftJoin(authUsers, eq(teamMembersTable.userId, authUsers.id));
-
-  const [team] = await db
-    .select({ name: teams.name })
-    .from(teams)
-    .where(eq(teams.id, teamId));
+  const [team, teamMembers] = await Promise.all([
+    trpc.team.getTeam(teamId),
+    trpc.team.getTeamMembers(teamId),
+  ]);
 
   return (
     <section className="w-full h-full p-6 scrollbar-hide overflow-y-auto">

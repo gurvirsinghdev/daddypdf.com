@@ -1,4 +1,3 @@
-import { sq } from "date-fns/locale";
 import { sql } from "drizzle-orm";
 import {
   pgEnum,
@@ -16,7 +15,7 @@ const authUsers = authSchema.table("users", {
   id: uuid("id").primaryKey(),
 });
 
-export const teams = pgTable(
+export const teamsTable = pgTable(
   "teams",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -76,13 +75,13 @@ export const teams = pgTable(
 ).enableRLS();
 
 export const teamRoleEnum = pgEnum("team_role", ["owner", "admin", "member"]);
-export const teamMembers = pgTable(
+export const teamMembersTable = pgTable(
   "team_members",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     teamId: uuid("team_id")
       .notNull()
-      .references(() => teams.id, { onDelete: "cascade" }),
+      .references(() => teamsTable.id, { onDelete: "cascade" }),
     userId: uuid("user_id")
       .notNull()
       .references(() => authUsers.id, { onDelete: "cascade" }),

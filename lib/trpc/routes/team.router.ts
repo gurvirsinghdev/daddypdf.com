@@ -18,14 +18,14 @@ export const teamRouter = createTRPCRouter({
       })
       .from(teamMembersTable)
       .where(eq(teamMembersTable.userId, ctx.user.id))
-      .leftJoin(teamsTable, eq(teamMembersTable.id, teamsTable.id));
+      .leftJoin(teamsTable, eq(teamMembersTable.teamId, teamsTable.id));
 
     return teams;
   }),
 
   getTeam: protectedProcedure
     .input(z.string())
-    .query(async ({ ctx, input: teamId }) => {
+    .query(async ({ input: teamId }) => {
       const [team] = await db
         .select({ name: teamsTable.name })
         .from(teamsTable)
@@ -35,7 +35,7 @@ export const teamRouter = createTRPCRouter({
 
   getTeamMembers: protectedProcedure
     .input(z.string())
-    .query(async ({ ctx, input: teamId }) => {
+    .query(async ({ input: teamId }) => {
       const teamMembers = await db
         .select({
           id: teamMembersTable.id,

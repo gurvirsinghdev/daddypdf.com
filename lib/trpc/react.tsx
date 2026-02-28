@@ -30,6 +30,9 @@ export function TRPCProvider(props: PropsWithChildren) {
         httpBatchLink({
           transformer: superjson,
           url: getUrl(),
+          fetch(url, options) {
+            return fetch(url, { ...options, credentials: "include" });
+          },
         }),
       ],
     }),

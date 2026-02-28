@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/drizzle";
 import { createTRPCRouter, protectedProcedure } from "../init";
-import { eq, inArray } from "drizzle-orm";
+import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { teamMembersTable, teamsTable } from "@/lib/db/schema";
 import z from "zod";
 import { authUsers } from "drizzle-orm/supabase";
@@ -62,10 +62,12 @@ export const teamRouter = createTRPCRouter({
               id: teamMembersTable.id,
               userId: teamMembersTable.userId,
               role: teamMembersTable.role,
-              joinedAt: teamMembersTable.createdAt,
+              createdAt: teamMembersTable.createdAt,
+              joinedAt: teamMembersTable.joinedAt,
             })
             .from(teamMembersTable)
-            .where(eq(teamMembersTable.teamId, teamId));
+            .where(eq(teamMembersTable.teamId, teamId))
+            .orderBy(asc(teamMembersTable.createdAt));
         });
 
         if (teamMembers.length === 0) {
@@ -79,19 +81,31 @@ export const teamRouter = createTRPCRouter({
           .select({
             id: authUsers.id,
             email: authUsers.email,
+            full_name: sql`auth.users.raw_user_meta_data->>'full_name'`,
           })
           .from(authUsers)
           .where(inArray(authUsers.id, uniqueUserIds));
 
         const emailByUserId = new Map(
-          users.map((user) => [user.id, user.email]),
+          users.map((user) => [
+            user.id,
+            { email: user.email, full_name: user.full_name },
+          ]),
         );
 
         return teamMembers.map((teamMember) => ({
           ...teamMember,
-          email: emailByUserId.get(teamMember.userId),
+          id: teamMember.id,
+          role: teamMember.role,
+          userId: teamMember.userId,
+          joinedAt:
+            teamMember.role === "member"
+              ? teamMember.joinedAt
+              : teamMember.createdAt,
+          ...emailByUserId.get(teamMember.userId),
         }));
       } catch (error) {
+        console.log(error);
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message:

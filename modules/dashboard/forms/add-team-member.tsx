@@ -37,6 +37,7 @@ export default function AddTeamMemberButtonAndDialog({
   teamId,
 }: AddTeamMemberButtonAndDialogProps) {
   const [open, setOpen] = useState(false);
+  const utils = trpc.useUtils();
   const form = useForm<z.infer<typeof inviteTeamMemberSchema>>({
     resolver: zodResolver(inviteTeamMemberSchema),
     defaultValues: { email: "" },
@@ -49,7 +50,8 @@ export default function AddTeamMemberButtonAndDialog({
         loading: "Inviting member...",
       });
     },
-    onSuccess() {
+    async onSuccess() {
+      await utils.team.getTeamMembers.invalidate(teamId);
       form.reset();
       setOpen(false);
       toast.success("Member invited successfully!", {

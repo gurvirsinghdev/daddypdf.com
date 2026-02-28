@@ -40,7 +40,7 @@ export const teamRouter = createTRPCRouter({
   getTeamMembers: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input: teamId }) => {
-      const visibleTeamMembers = await ctx.withRls(async (tx) => {
+      const teamMembers = await ctx.withRls(async (tx) => {
         return tx
           .select({
             id: teamMembersTable.id,
@@ -52,11 +52,13 @@ export const teamRouter = createTRPCRouter({
           .where(eq(teamMembersTable.teamId, teamId));
       });
 
-      if (visibleTeamMembers.length === 0) {
+      if (teamMembers.length === 0) {
         return [];
       }
 
-      const uniqueUserIds = [...new Set(visibleTeamMembers.map(({ userId }) => userId))];
+      const uniqueUserIds = [
+        ...new Set(teamMembers.map(({ userId }) => userId)),
+      ];
       const users = await db
         .select({
           id: authUsers.id,
@@ -64,13 +66,12 @@ export const teamRouter = createTRPCRouter({
         })
         .from(authUsers)
         .where(inArray(authUsers.id, uniqueUserIds));
-      const emailByUserId = new Map(users.map((user) => [user.id, user.email ?? ""]));
 
-      return visibleTeamMembers.map((teamMember) => ({
-        id: teamMember.id,
-        email: emailByUserId.get(teamMember.userId) ?? "",
-        role: teamMember.role,
-        joinedAt: teamMember.joinedAt,
+      const emailByUserId = new Map(users.map((user) => [user.id, user.email]));
+
+      return teamMembers.map((teamMember) => ({
+        ...teamMember,
+        email: emailByUserId.get(teamMember.userId),
       }));
     }),
 });

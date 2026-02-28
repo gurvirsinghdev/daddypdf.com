@@ -23,18 +23,22 @@ export type WithRlsCallback<T> = (tx: DbTransaction) => Promise<T>;
 
 export async function withRls<T>(
   userId: string,
+  role: string,
   callback: WithRlsCallback<T>,
 ): Promise<T> {
   return db.transaction(async (tx) => {
-    const claims = JSON.stringify({ sub: userId, role: "authenticated" });
+    const userRole = role === "authenticated" ? "authenticated" : "anon";
+    const claims = JSON.stringify({ sub: userId, role: userRole });
 
-    await tx.execute(sql`select set_config('request.jwt.claims', ${claims}, true)`);
-    await tx.execute(sql`select set_config('request.jwt.claim.sub', ${userId}, true)`);
-    await tx.execute(
-      sql`select set_config('request.jwt.claim.role', 'authenticated', true)`,
-    );
-    await tx.execute(sql`set local role authenticated`);
-    await tx.execute(sql`select set_config('search_path', 'public, auth', true)`);
+    const statements = [
+      sql`select set_config('request.jwt.claims', ${claims}, true)`,
+      sql`select set_config('request.jwt.claim.sub', ${userId}, true)`,
+      sql`select set_config('request.jwt.claim.role', ${userRole}, true)`,
+      sql`set local role ${sql.raw(userRole)}`,
+    ];
+    for await (const statement of statements) {
+      await tx.execute(statement);
+    }
 
     return callback(tx);
   });

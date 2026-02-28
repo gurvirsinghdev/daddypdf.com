@@ -33,7 +33,8 @@ export const protectedProcedure = baseProcedure.use(({ ctx, next }) => {
     ctx: {
       ...ctx,
       user: ctx.user!,
-      withRls: <T>(callback: WithRlsCallback<T>) => withRls(ctx.user!.id, callback),
+      withRls: <T>(callback: WithRlsCallback<T>) =>
+        withRls(ctx.user!.id, "authenticated", callback),
     },
   });
 });

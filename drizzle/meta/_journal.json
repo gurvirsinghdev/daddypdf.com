@@ -43,6 +43,13 @@
       "when": 1772200816624,
       "tag": "0008_authenticated-grants",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772237480834,
+      "tag": "0009_fix-team-member-select-policy",
+      "breakpoints": true
     }
   ]
 }

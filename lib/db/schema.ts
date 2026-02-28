@@ -47,7 +47,8 @@ export const teamsTable = pgTable(
   },
 ).enableRLS();
 
-export const teamRoleEnum = pgEnum("team_role", ["owner", "admin", "member"]);
+export const teamRoleEnum = pgEnum("tm_role", ["owner", "admin", "member"]);
+export const teamMemberStatusEnum = pgEnum("tm_status", ["invited", "joined"]);
 export const teamMembersTable = pgTable(
   "team_members",
   {
@@ -59,6 +60,9 @@ export const teamMembersTable = pgTable(
       .notNull()
       .references(() => authUsers.id, { onDelete: "cascade" }),
     role: teamRoleEnum("role").notNull().default("member"),
+    status: teamMemberStatusEnum("status").notNull().default("invited"),
+    invitedAt: timestamp("invited_at", { withTimezone: true }),
+    joinedAt: timestamp("joined_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

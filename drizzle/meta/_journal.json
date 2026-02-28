@@ -50,6 +50,27 @@
       "when": 1772237480834,
       "tag": "0009_fix-team-member-select-policy",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772260523292,
+      "tag": "0010_moaning_doctor_faustus",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772260540700,
+      "tag": "0011_empty_the_hand",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1772260892445,
+      "tag": "0012_funny_iron_fist",
+      "breakpoints": true
     }
   ]
 }

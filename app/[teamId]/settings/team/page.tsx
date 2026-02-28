@@ -66,7 +66,7 @@ export default async function TeamsSettingsPage({
                 <TableRow className="bg-neutral-50 dark:bg-neutral-900">
                   <TableHead>Member</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Joined At</TableHead>
+                  <TableHead>Joined</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>

@@ -130,4 +130,36 @@ export const teamRouter = createTRPCRouter({
         });
       }
     }),
+
+  inviteTeamMember: protectedProcedure
+    .input(
+      z.object({
+        teamId: z.string(),
+        email: z.email("Please enter a valid email address."),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.withRls(async (tx) => {
+          const [user] = await db
+            .select()
+            .from(authUsers)
+            .where(eq(authUsers.email, input.email));
+          if (!user) return;
+
+          await tx.insert(teamMembersTable).values({
+            userId: user.id,
+            teamId: input.teamId,
+            role: "member",
+            status: "invited",
+            invitedAt: new Date(),
+          });
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to invite a member to this team.",
+        });
+      }
+    }),
 });

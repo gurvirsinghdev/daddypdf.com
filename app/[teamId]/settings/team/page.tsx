@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc/server";
+import AddTeamMemberButtonAndDialog from "@/modules/dashboard/forms/add-team-member";
 import UpdateTeamSettingsForm from "@/modules/dashboard/forms/update-team-settings";
 import { TrashIcon } from "lucide-react";
 import moment from "moment";
@@ -52,13 +53,16 @@ export default async function TeamsSettingsPage({
         <hr className="bg-neutral-200 dark:bg-neutral-800 h-0.5 rounded border-none" />
 
         <div className="flex flex-col gap-4">
-          <div>
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              Team Members
-            </h3>
-            <p className="text-sm text-neutral-500">
-              Manage your team members and their roles.
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                Team Members
+              </h3>
+              <p className="text-sm text-neutral-500">
+                Manage your team members and their roles.
+              </p>
+            </div>
+            <AddTeamMemberButtonAndDialog teamId={teamId} />
           </div>
           <div>
             <Table className="border shadow-sm">
@@ -100,9 +104,11 @@ export default async function TeamsSettingsPage({
                       {moment(teamMember.joinedAt).fromNow()}
                     </TableCell>
                     <TableCell>
-                      <Button variant={"ghost"} size={"icon"}>
-                        <TrashIcon />
-                      </Button>
+                      {teamMember.role !== "owner" && (
+                        <Button variant={"ghost"} size={"icon"}>
+                          <TrashIcon />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -31,17 +31,21 @@ import {
 import { GoOrganization } from "react-icons/go";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { redirect } from "next/navigation";
 import LogoutButton from "@/modules/dashboard/ui/logout-button";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc/server";
 
 interface SidebarMenuItem {
+  pathname: string;
   label: string;
   // @ts-ignore
   icon: any;
 }
-type SidebarMenu = SidebarMenuItem[];
+
+interface SidebarMenu {
+  group: string;
+  items: SidebarMenuItem[];
+}
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -53,17 +57,26 @@ export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const { teamId } = await params;
-  const teams = await trpc.team.getTeams();
 
-  const sidebarMainMenu: SidebarMenu = [
-    { label: "Templates", icon: LayoutDashboardIcon },
-    { label: "API Keys", icon: KeyIcon },
-    { label: "Usage", icon: ChartAreaIcon },
-  ];
-  const sidebarSettingsMenu: SidebarMenu = [
-    { label: "Team", icon: UsersIcon },
-    { label: "Billing", icon: CreditCardIcon },
-    { label: "Settings", icon: SettingsIcon },
+  const sidebarMenus: SidebarMenu[] = [
+    {
+      group: "",
+      items: [{ pathname: "", label: "Dashboard", icon: LayoutDashboardIcon }],
+    },
+    {
+      group: "Developers",
+      items: [
+        { pathname: "usage", label: "Usage", icon: ChartAreaIcon },
+        { pathname: "api-keys", label: "API Keys", icon: KeyIcon },
+      ],
+    },
+    {
+      group: "Organization",
+      items: [
+        { pathname: "team-settings", label: "Team Settings", icon: UsersIcon },
+        { pathname: "billing", label: "Billing", icon: CreditCardIcon },
+      ],
+    },
   ];
 
   return (
@@ -79,59 +92,33 @@ export default async function DashboardLayout({
                 >
                   <div className="flex items-center justify-start gap-2">
                     <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />
-                    <span className="capitalize">{teams[0]?.teamName}</span>
+                    <span className="capitalize">{teamId}</span>
                   </div>
                   <ChevronDownIcon />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {teams.map((team) => (
-                  <DropdownMenuItem
-                    key={team.teamId}
-                    disabled={team.teamId === teams[0]?.teamId}
-                  >
-                    <div className="flex items-center justify-start gap-2">
-                      <GoOrganization className="size-4 text-neutral-500 dark:text-neutral-400" />{" "}
-                      <span className="capitalize">{team.teamName}</span>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
+              <DropdownMenuContent align="start"></DropdownMenuContent>
             </DropdownMenu>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
-              <SidebarGroup>
-                <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  {sidebarMainMenu.map((item, idx) => (
-                    <SidebarMenuItem key={idx}>
-                      <SidebarMenuButton className="cursor-pointer">
-                        <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarGroupContent>
-              </SidebarGroup>
-
-              <SidebarGroup>
-                <SidebarGroupLabel>Settings</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  {sidebarSettingsMenu.map((item, idx) => (
-                    <SidebarMenuItem key={idx}>
-                      <Link
-                        href={`/${teamId}/settings/${item.label.toLowerCase().replaceAll(" ", "-")}`}
-                      >
-                        <SidebarMenuButton className="cursor-pointer">
-                          <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarGroupContent>
-              </SidebarGroup>
+              {sidebarMenus.map((menu, idx) => (
+                <SidebarGroup key={idx}>
+                  <SidebarGroupLabel>{menu.group}</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    {menu.items.map((item, idx) => (
+                      <SidebarMenuItem key={idx}>
+                        <Link href={`/${teamId}/${item.pathname}`}>
+                          <SidebarMenuButton className="cursor-pointer">
+                            <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
+                            <span>{item.label}</span>
+                          </SidebarMenuButton>
+                        </Link>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              ))}
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="border-t">

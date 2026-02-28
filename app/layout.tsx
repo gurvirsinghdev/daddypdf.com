@@ -62,7 +62,7 @@ export default function RootLayout({
           <Toaster
             toastOptions={{
               className: dmSans.className,
-              descriptionClassName: "text-neutral-500 dark:text-neutral-400",
+              descriptionClassName: "text-neutral-500! dark:text-neutral-400!",
             }}
           />
           {children}

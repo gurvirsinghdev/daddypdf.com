@@ -55,7 +55,7 @@ export default function SignInPage() {
       toast.success("Signed in successfully!", {
         description: "Redirecting...",
       });
-      router.push("/api/dashboard");
+      router.push("/api/auth/complete");
       router.refresh();
     }
   };

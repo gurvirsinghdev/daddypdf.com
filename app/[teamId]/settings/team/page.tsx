@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectItem,
@@ -16,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc/server";
+import UpdateTeamSettingsForm from "@/modules/dashboard/forms/update-team-settings";
 import { TrashIcon } from "lucide-react";
 import moment from "moment";
 
@@ -45,12 +45,7 @@ export default async function TeamsSettingsPage({
             </p>
           </div>
           <div>
-            <Input
-              type="text"
-              className="rounded py-6"
-              defaultValue={team.name}
-              placeholder="Enter your team's display name"
-            />
+            <UpdateTeamSettingsForm teamId={teamId} teamName={team.name} />
           </div>
         </div>
 

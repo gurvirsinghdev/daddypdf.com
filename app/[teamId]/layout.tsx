@@ -37,6 +37,7 @@ import Link from "next/link";
 import { trpc } from "@/lib/trpc/server";
 
 interface SidebarMenuItem {
+  pathname: string;
   label: string;
   // @ts-ignore
   icon: any;
@@ -56,14 +57,14 @@ export default async function DashboardLayout({
   const teams = await trpc.team.getTeams();
 
   const sidebarMainMenu: SidebarMenu = [
-    { label: "Templates", icon: LayoutDashboardIcon },
-    { label: "API Keys", icon: KeyIcon },
-    { label: "Usage", icon: ChartAreaIcon },
+    { pathname: "templates", label: "Templates", icon: LayoutDashboardIcon },
+    { pathname: "api-keys", label: "API Keys", icon: KeyIcon },
+    { pathname: "usage", label: "Usage", icon: ChartAreaIcon },
   ];
   const sidebarSettingsMenu: SidebarMenu = [
-    { label: "Team", icon: UsersIcon },
-    { label: "Billing", icon: CreditCardIcon },
-    { label: "Settings", icon: SettingsIcon },
+    { pathname: "settings/team", label: "Team", icon: UsersIcon },
+    { pathname: "settings/billing", label: "Billing", icon: CreditCardIcon },
+    { pathname: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
   return (
@@ -106,10 +107,12 @@ export default async function DashboardLayout({
                 <SidebarGroupContent>
                   {sidebarMainMenu.map((item, idx) => (
                     <SidebarMenuItem key={idx}>
-                      <SidebarMenuButton className="cursor-pointer">
-                        <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
+                      <Link href={`/${teamId}/${item.pathname}`}>
+                        <SidebarMenuButton className="cursor-pointer">
+                          <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </Link>
                     </SidebarMenuItem>
                   ))}
                 </SidebarGroupContent>
@@ -120,9 +123,7 @@ export default async function DashboardLayout({
                 <SidebarGroupContent>
                   {sidebarSettingsMenu.map((item, idx) => (
                     <SidebarMenuItem key={idx}>
-                      <Link
-                        href={`/${teamId}/settings/${item.label.toLowerCase().replaceAll(" ", "-")}`}
-                      >
+                      <Link href={`/${teamId}/${item.pathname}`}>
                         <SidebarMenuButton className="cursor-pointer">
                           <item.icon className="size-4 text-neutral-500 dark:text-neutral-400" />
                           <span>{item.label}</span>
